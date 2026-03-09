@@ -1,0 +1,77 @@
+// src/App.jsx
+import React, { useState, useEffect } from 'react';
+import { Menu as MenuIcon, LayoutDashboard, FileText, Package, Palette, ShoppingCart } from 'lucide-react';
+import { themes } from './themes';
+
+// Komponen Pecahan
+import POSScreen from './components/POSScreen';
+import DashboardPanels from './components/DashboardPanels';
+
+export default function App() {
+  // === STATE FIREBASE & DATA (Tetap ada di sini untuk didistribusikan ke child) ===
+  const [currentUser, setCurrentUser] = useState({ id: 'admin', role: 'admin', name: 'Administrator' }); // Dummy login agar cepat test
+  const [activeTab, setActiveTab] = useState('pos');
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  
+  // State Tema
+  const [currentThemeKey, setCurrentThemeKey] = useState('gelap');
+  const theme = themes[currentThemeKey];
+
+  // State POS (Kumpulkan dalam satu object props agar rapi)
+  const posProps = {
+    searchQuery: '', setSearchQuery: () => {}, activeCategory: 'Semua', setActiveCategory: () => {},
+    displayCategories: ['Semua', 'Makanan', 'Minuman'], filteredProductsSafe: [], 
+    addToCart: () => {}, cart: [], updateQty: () => {}, clearCart: () => {}, 
+    isCartOpen: false, setIsCartOpen: () => {}, grandTotal: 0
+    // Lanjutkan masukkan fungsi/state lain yang relevan...
+  };
+
+  const dashboardProps = { transactions: [], products: [], currentUser };
+
+  // --- RENDER ---
+  return (
+    <div className={`flex h-[100dvh] w-full font-sans overflow-hidden ${theme.bgBase} ${theme.textMain}`}>
+      
+      {/* Overlay Mobile */}
+      {isSidebarOpen && <div className="fixed inset-0 bg-black/60 z-40 lg:hidden" onClick={() => setIsSidebarOpen(false)} />}
+      
+      {/* SIDEBAR */}
+      <aside className={`fixed lg:static inset-y-0 left-0 z-50 w-64 ${theme.bgPanel} backdrop-blur-xl border-r ${theme.border} flex flex-col shadow-2xl transition-transform duration-300 shrink-0 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}>
+        <div className={`p-6 border-b ${theme.border}`}>
+          <h1 className="text-xl font-bold tracking-widest uppercase">GG <span className={theme.accent}>POS</span></h1>
+        </div>
+        
+        <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
+          <button onClick={() => setActiveTab('pos')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${activeTab === 'pos' ? theme.buttonBg + ' ' + theme.buttonText : 'hover:bg-black/10'}`}><LayoutDashboard size={20}/> Kasir</button>
+          <button onClick={() => setActiveTab('history')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${activeTab === 'history' ? theme.buttonBg + ' ' + theme.buttonText : 'hover:bg-black/10'}`}><FileText size={20}/> Riwayat</button>
+          <button onClick={() => setActiveTab('inventory')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${activeTab === 'inventory' ? theme.buttonBg + ' ' + theme.buttonText : 'hover:bg-black/10'}`}><Package size={20}/> Inventaris</button>
+        </nav>
+
+        {/* Pemilih Tema di bawah Sidebar */}
+        <div className={`p-4 border-t ${theme.border}`}>
+          <div className="flex items-center gap-2 mb-2 text-sm font-bold"><Palette size={16}/> Tema UI</div>
+          <select value={currentThemeKey} onChange={(e) => setCurrentThemeKey(e.target.value)} className={`w-full bg-black/20 border ${theme.border} rounded-lg p-2 text-sm focus:outline-none`}>
+            {Object.keys(themes).map(k => <option key={k} value={k} className="bg-gray-900 text-white">{themes[k].name}</option>)}
+          </select>
+        </div>
+      </aside>
+
+      {/* MAIN KONTEN */}
+      <main className="flex-1 flex flex-col h-full z-10 relative min-w-0">
+        {/* Header Mobile */}
+        <header className={`lg:hidden p-4 ${theme.bgPanel} border-b ${theme.border} flex justify-between items-center shrink-0`}>
+          <button onClick={() => setIsSidebarOpen(true)} className="p-2"><MenuIcon size={24} /></button>
+          <span className="font-bold tracking-wider uppercase">{activeTab}</span>
+          <button onClick={() => posProps.setIsCartOpen(true)} className="p-2"><ShoppingCart size={24} /></button>
+        </header>
+
+        {/* RENDER KONTEN BERDASARKAN TAB */}
+        {activeTab === 'pos' ? (
+          <POSScreen props={posProps} theme={theme} />
+        ) : (
+          <DashboardPanels activeTab={activeTab} props={dashboardProps} theme={theme} />
+        )}
+      </main>
+    </div>
+  );
+}
