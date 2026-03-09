@@ -473,7 +473,7 @@ export default function App() {
               <table className="w-full text-[10px] text-left border-t border-b border-black border-dashed my-2 py-2">
                 <tbody>{(trx.items || []).map((item, idx) => (<tr key={idx}><td className="w-3/5 pb-1">{item.name}<br/>{item.qty} x {item.price}</td><td className="w-2/5 text-right align-bottom pb-1">{item.qty * item.price}</td></tr>))}</tbody>
               </table>
-              <div className="text-[10px] text-right mb-4"><p>Subtotal: {trx.subtotal}</p>{trx.discount > 0 && <p>Diskon: -{trx.discount}</p>}{trx.tax > 0 && <p>Pajak 10%: {trx.tax}</p><p className="font-bold text-[12px] mt-1">TOTAL: Rp {trx.total}</p><p>Tipe Bayar: {trx.paymentMethod}</p></div>
+              <div className="text-[10px] text-right mb-4"><p>Subtotal: {trx.subtotal}</p>{trx.discount > 0 && <p>Diskon: -{trx.discount}</p>}{trx.tax > 0 && <p>Pajak 10%: {trx.tax}</p>}<p className="font-bold text-[12px] mt-1">TOTAL: Rp {trx.total}</p><p>Tipe Bayar: {trx.paymentMethod}</p></div>
               <p className="text-[10px] text-center italic border-t border-black pt-2">{printType === 'reprint' ? '** CETAK ULANG **' : 'Terima kasih atas kunjungan Anda!'}</p>
             </div>
           )
