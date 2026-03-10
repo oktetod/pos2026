@@ -28,8 +28,8 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Accept Android SDK licenses
-        run: yes | sdkmanager --licenses || true
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
 
       - name: Install Android build tools
         run: sdkmanager "build-tools;34.0.0" "platforms;android-34"
