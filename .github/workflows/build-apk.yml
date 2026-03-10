@@ -1,0 +1,102 @@
+name: Build Android APK (TWA)
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  build-apk:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Accept Android SDK licenses
+        run: yes | sdkmanager --licenses || true
+
+      - name: Install Android build tools
+        run: sdkmanager "build-tools;34.0.0" "platforms;android-34"
+
+      - name: Install Bubblewrap CLI
+        run: npm install -g @bubblewrap/cli
+
+      - name: Configure Bubblewrap SDK paths
+        run: |
+          mkdir -p ~/.bubblewrap
+          echo "{\"jdkPath\":\"$JAVA_HOME\",\"androidSdkPath\":\"$ANDROID_HOME\"}" > ~/.bubblewrap/config.json
+
+      - name: Restore keystore
+        run: |
+          echo "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" | base64 -d > android-keystore.jks
+          echo "Keystore OK"
+
+      - name: Auto-create assetlinks.json & push to repo
+        run: |
+          mkdir -p public/.well-known
+          cat > public/.well-known/assetlinks.json << 'ASSETEOF'
+          [{
+            "relation": ["delegate_permission/common.handle_all_urls"],
+            "target": {
+              "namespace": "android_app",
+              "package_name": "com.ggpasoryan.pos",
+              "sha256_cert_fingerprints": [
+                "9E:A4:EF:D5:68:5E:03:15:3C:45:7A:49:3F:A5:E5:8B:61:63:3E:3F:3B:53:A0:4E:33:07:32:2F:C8:6B:C8:96"
+              ]
+            }
+          }]
+          ASSETEOF
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add public/.well-known/assetlinks.json
+          git diff --staged --quiet && echo "assetlinks unchanged" || \
+            (git commit -m "chore: auto-update assetlinks.json [skip ci]" && git push)
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build TWA APK
+        run: printf 'ggpasoryan2026\nggpasoryan2026\n' | bubblewrap build --skipPwaValidation
+
+      - name: Find & rename APK
+        run: |
+          APK=$(find . -name "*.apk" -not -path "*/intermediates/*" -not -path "*debug*" | head -1)
+          echo "Found APK: $APK"
+          cp "$APK" GG-Pasoryan-POS-Android.apk
+
+      - name: Upload to GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: latest-apk
+          name: GG POS Android - Latest Build
+          body: |
+            ## GG Pasoryan Enterprise POS — Android APK (TWA)
+
+            **Cara install:**
+            1. Download APK di bawah
+            2. Settings → Security → aktifkan "Install unknown apps"
+            3. Buka file APK → Install
+
+            **Login:** Password default `008`
+            **App:** https://pos2026-mu.vercel.app
+          draft: false
+          prerelease: false
+          make_latest: true
+          files: GG-Pasoryan-POS-Android.apk
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
