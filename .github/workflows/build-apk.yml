@@ -23,31 +23,264 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Setup Node.js 20
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
 
-      - name: Install Android build tools
-        run: sdkmanager "build-tools;34.0.0" "platforms;android-34"
-
-      - name: Install tools
+      - name: Install Android build tools & platform
         run: |
-          npm install -g @bubblewrap/cli
-          sudo apt-get install -y expect
-
-      - name: Configure Bubblewrap SDK paths
-        run: |
-          mkdir -p ~/.bubblewrap
-          echo "{\"jdkPath\":\"$JAVA_HOME\",\"androidSdkPath\":\"$ANDROID_HOME\"}" > ~/.bubblewrap/config.json
+          sdkmanager --install "platforms;android-34" "build-tools;34.0.0" 2>&1 | tail -5
+          echo "ANDROID_HOME=$ANDROID_HOME"
 
       - name: Restore keystore
         run: |
-          echo "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" | base64 -d > android-keystore.jks
-          echo "Keystore OK"
+          echo "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" | base64 -d > $GITHUB_WORKSPACE/android-keystore.jks
+          ls -la android-keystore.jks
+
+      - name: Generate TWA Android Project
+        run: |
+          mkdir -p twa-app/app/src/main/java/com/ggpasoryan/pos
+          mkdir -p twa-app/app/src/main/res/values
+          mkdir -p twa-app/app/src/main/res/xml
+          mkdir -p twa-app/app/src/main/res/mipmap-hdpi
+          mkdir -p twa-app/app/src/main/res/mipmap-mdpi
+          mkdir -p twa-app/app/src/main/res/mipmap-xhdpi
+          mkdir -p twa-app/app/src/main/res/mipmap-xxhdpi
+          mkdir -p twa-app/app/src/main/res/mipmap-xxxhdpi
+
+          # settings.gradle
+          cat > twa-app/settings.gradle << 'EOF'
+          pluginManagement {
+              repositories {
+                  google()
+                  mavenCentral()
+                  gradlePluginPortal()
+              }
+          }
+          dependencyResolutionManagement {
+              repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+              repositories {
+                  google()
+                  mavenCentral()
+              }
+          }
+          rootProject.name = "GGPos"
+          include ':app'
+          EOF
+
+          # root build.gradle
+          cat > twa-app/build.gradle << 'EOF'
+          buildscript {
+              repositories {
+                  google()
+                  mavenCentral()
+              }
+              dependencies {
+                  classpath 'com.android.tools.build:gradle:8.2.2'
+              }
+          }
+          EOF
+
+          # gradle wrapper properties
+          mkdir -p twa-app/gradle/wrapper
+          cat > twa-app/gradle/wrapper/gradle-wrapper.properties << 'EOF'
+          distributionBase=GRADLE_USER_HOME
+          distributionPath=wrapper/dists
+          distributionUrl=https\://services.gradle.org/distributions/gradle-8.2-bin.zip
+          zipStoreBase=GRADLE_USER_HOME
+          zipStorePath=wrapper/dists
+          EOF
+
+          # Download gradle wrapper jar
+          cd twa-app
+          wget -q https://raw.githubusercontent.com/gradle/gradle/v8.2.0/gradle/wrapper/gradle-wrapper.jar -O gradle/wrapper/gradle-wrapper.jar
+          
+          # gradlew script
+          cat > gradlew << 'EOF'
+          #!/bin/sh
+          exec java -jar "$(dirname "$0")/gradle/wrapper/gradle-wrapper.jar" "$@"
+          EOF
+          chmod +x gradlew
+          cd ..
+
+          # app/build.gradle
+          cat > twa-app/app/build.gradle << 'EOF'
+          plugins {
+              id 'com.android.application'
+          }
+          android {
+              namespace 'com.ggpasoryan.pos'
+              compileSdk 34
+              defaultConfig {
+                  applicationId "com.ggpasoryan.pos"
+                  minSdk 21
+                  targetSdk 34
+                  versionCode 1
+                  versionName "1.0"
+              }
+              signingConfigs {
+                  release {
+                      storeFile file("../../android-keystore.jks")
+                      storePassword "ggpasoryan2026"
+                      keyAlias "ggpos"
+                      keyPassword "ggpasoryan2026"
+                  }
+              }
+              buildTypes {
+                  release {
+                      minifyEnabled false
+                      signingConfig signingConfigs.release
+                  }
+              }
+              compileOptions {
+                  sourceCompatibility JavaVersion.VERSION_17
+                  targetCompatibility JavaVersion.VERSION_17
+              }
+          }
+          dependencies {
+              implementation 'com.google.androidbrowserhelper:androidbrowserhelper:2.5.0'
+          }
+          EOF
+
+          # AndroidManifest.xml
+          cat > twa-app/app/src/main/AndroidManifest.xml << 'EOF'
+          <?xml version="1.0" encoding="utf-8"?>
+          <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+              <uses-permission android:name="android.permission.INTERNET" />
+              <application
+                  android:allowBackup="true"
+                  android:icon="@mipmap/ic_launcher"
+                  android:label="@string/app_name"
+                  android:supportsRtl="true"
+                  android:theme="@style/AppTheme">
+                  <meta-data
+                      android:name="asset_statements"
+                      android:resource="@string/asset_statements" />
+                  <activity
+                      android:name="com.google.androidbrowserhelper.trusted.LauncherActivity"
+                      android:exported="true"
+                      android:label="@string/app_name">
+                      <meta-data
+                          android:name="android.support.customtabs.trusted.DEFAULT_URL"
+                          android:value="https://pos2026-mu.vercel.app" />
+                      <meta-data
+                          android:name="android.support.customtabs.trusted.STATUS_BAR_COLOR"
+                          android:resource="@color/colorPrimary" />
+                      <meta-data
+                          android:name="android.support.customtabs.trusted.SPLASH_IMAGE_DRAWABLE"
+                          android:resource="@drawable/splash" />
+                      <meta-data
+                          android:name="android.support.customtabs.trusted.SPLASH_SCREEN_BACKGROUND_COLOR"
+                          android:resource="@color/colorPrimary" />
+                      <meta-data
+                          android:name="android.support.customtabs.trusted.SPLASH_SCREEN_FADE_OUT_DURATION"
+                          android:value="300" />
+                      <meta-data
+                          android:name="android.support.customtabs.trusted.FILE_PROVIDER_AUTHORITY"
+                          android:value="com.ggpasoryan.pos.fileprovider" />
+                      <intent-filter>
+                          <action android:name="android.intent.action.MAIN" />
+                          <category android:name="android.intent.category.LAUNCHER" />
+                      </intent-filter>
+                      <intent-filter android:autoVerify="true">
+                          <action android:name="android.intent.action.VIEW" />
+                          <category android:name="android.intent.category.DEFAULT" />
+                          <category android:name="android.intent.category.BROWSABLE" />
+                          <data android:scheme="https" android:host="pos2026-mu.vercel.app" />
+                      </intent-filter>
+                  </activity>
+              </application>
+          </manifest>
+          EOF
+
+          # strings.xml
+          cat > twa-app/app/src/main/res/values/strings.xml << 'EOF'
+          <?xml version="1.0" encoding="utf-8"?>
+          <resources>
+              <string name="app_name">GG Pasoryan POS</string>
+              <string name="asset_statements">
+                  [{
+                    \"relation\": [\"delegate_permission/common.handle_all_urls\"],
+                    \"target\": {
+                      \"namespace\": \"android_app\",
+                      \"package_name\": \"com.ggpasoryan.pos\",
+                      \"sha256_cert_fingerprints\": [\"9E:A4:EF:D5:68:5E:03:15:3C:45:7A:49:3F:A5:E5:8B:61:63:3E:3F:3B:53:A0:4E:33:07:32:2F:C8:6B:C8:96\"]
+                    }
+                  }]
+              </string>
+          </resources>
+          EOF
+
+          # colors.xml
+          cat > twa-app/app/src/main/res/values/colors.xml << 'EOF'
+          <?xml version="1.0" encoding="utf-8"?>
+          <resources>
+              <color name="colorPrimary">#1976D2</color>
+          </resources>
+          EOF
+
+          # styles.xml
+          cat > twa-app/app/src/main/res/values/styles.xml << 'EOF'
+          <?xml version="1.0" encoding="utf-8"?>
+          <resources>
+              <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+                  <item name="colorPrimary">@color/colorPrimary</item>
+              </style>
+          </resources>
+          EOF
+
+          # Simple splash drawable
+          mkdir -p twa-app/app/src/main/res/drawable
+          cat > twa-app/app/src/main/res/drawable/splash.xml << 'EOF'
+          <?xml version="1.0" encoding="utf-8"?>
+          <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+              <item android:drawable="@color/colorPrimary" />
+          </layer-list>
+          EOF
+
+          # Simple launcher icon (blue square PNG via Python)
+          python3 -c "
+          import struct, zlib, base64
+
+          def create_png(size, color):
+              def chunk(name, data):
+                  c = zlib.crc32(name + data) & 0xffffffff
+                  return struct.pack('>I', len(data)) + name + data + struct.pack('>I', c)
+              ihdr = struct.pack('>IIBBBBB', size, size, 8, 2, 0, 0, 0)
+              row = b'\\x00' + bytes(color) * size
+              raw = row * size
+              idat = zlib.compress(raw)
+              return b'\\x89PNG\\r\\n\\x1a\\n' + chunk(b'IHDR', ihdr) + chunk(b'IDAT', idat) + chunk(b'IEND', b'')
+
+          blue = [25, 118, 210]
+          sizes = {'mdpi':48,'hdpi':72,'xhdpi':96,'xxhdpi':144,'xxxhdpi':192}
+          for name, sz in sizes.items():
+              with open(f'twa-app/app/src/main/res/mipmap-{name}/ic_launcher.png','wb') as f:
+                  f.write(create_png(sz, blue))
+          print('Icons created')
+          "
+
+          echo "Project structure created:"
+          find twa-app -type f | head -40
+
+      - name: Build Release APK
+        run: |
+          cd twa-app
+          ./gradlew assembleRelease --no-daemon --stacktrace 2>&1
+        env:
+          ANDROID_HOME: ${{ env.ANDROID_HOME }}
+          JAVA_HOME: ${{ env.JAVA_HOME }}
+
+      - name: Find & rename APK
+        run: |
+          echo "=== All APK files ==="
+          find . -name "*.apk" | sort
+          APK=$(find . -name "*release*.apk" | head -1)
+          if [ -z "$APK" ]; then
+            APK=$(find . -name "*.apk" | head -1)
+          fi
+          echo "Using APK: $APK"
+          cp "$APK" GG-Pasoryan-POS-Android.apk
+          ls -lh GG-Pasoryan-POS-Android.apk
 
       - name: Auto-create assetlinks.json & push to repo
         run: |
@@ -67,45 +300,12 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add public/.well-known/assetlinks.json
-          git diff --staged --quiet && echo "unchanged" || \
+          git diff --staged --quiet && echo "No changes" || \
             (git commit -m "chore: auto-update assetlinks.json [skip ci]" && git push)
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Init & Build TWA APK via expect
-        run: |
-          /usr/bin/expect << 'EXPECTEOF'
-          set timeout 600
-          spawn bubblewrap build \
-            --skipPwaValidation \
-            --signingKeyPassphrase ggpasoryan2026 \
-            --signingKeyKeypassphrase ggpasoryan2026
-          expect {
-            -re {(Y/n|y/N)} {
-              send "n\r"
-              exp_continue
-            }
-            -re {[Pp]assword} {
-              send "ggpasoryan2026\r"
-              exp_continue
-            }
-            eof {
-              puts "Build finished"
-            }
-            timeout {
-              puts "Timeout!"
-              exit 1
-            }
-          }
-          EXPECTEOF
-
-      - name: Find & rename APK
-        run: |
-          APK=$(find . -name "*.apk" -not -path "*/intermediates/*" -not -path "*debug*" | head -1)
-          echo "Found APK: $APK"
-          cp "$APK" GG-Pasoryan-POS-Android.apk
-
-      - name: Upload to GitHub Release
+      - name: Upload APK to GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: latest-apk
