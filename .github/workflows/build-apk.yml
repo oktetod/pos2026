@@ -34,8 +34,10 @@ jobs:
       - name: Install Android build tools
         run: sdkmanager "build-tools;34.0.0" "platforms;android-34"
 
-      - name: Install Bubblewrap CLI
-        run: npm install -g @bubblewrap/cli
+      - name: Install tools
+        run: |
+          npm install -g @bubblewrap/cli
+          sudo apt-get install -y expect
 
       - name: Configure Bubblewrap SDK paths
         run: |
@@ -65,17 +67,37 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add public/.well-known/assetlinks.json
-          git diff --staged --quiet && echo "assetlinks unchanged" || \
+          git diff --staged --quiet && echo "unchanged" || \
             (git commit -m "chore: auto-update assetlinks.json [skip ci]" && git push)
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build TWA APK
+      - name: Init & Build TWA APK via expect
         run: |
-          yes no | bubblewrap build \
+          /usr/bin/expect << 'EXPECTEOF'
+          set timeout 600
+          spawn bubblewrap build \
             --skipPwaValidation \
             --signingKeyPassphrase ggpasoryan2026 \
             --signingKeyKeypassphrase ggpasoryan2026
+          expect {
+            -re {(Y/n|y/N)} {
+              send "n\r"
+              exp_continue
+            }
+            -re {[Pp]assword} {
+              send "ggpasoryan2026\r"
+              exp_continue
+            }
+            eof {
+              puts "Build finished"
+            }
+            timeout {
+              puts "Timeout!"
+              exit 1
+            }
+          }
+          EXPECTEOF
 
       - name: Find & rename APK
         run: |
