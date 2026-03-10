@@ -1,0 +1,42 @@
+{
+  "packageId": "com.ggpasoryan.pos",
+  "host": "pos2026-mu.vercel.app",
+  "name": "GG Pasoryan Enterprise POS",
+  "launcherName": "GG POS",
+  "display": "standalone",
+  "orientation": "portrait",
+  "themeColor": "#1a1412",
+  "navigationColor": "#1a1412",
+  "navigationColorDark": "#1a1412",
+  "navigationDividerColor": "#1a1412",
+  "navigationDividerColorDark": "#1a1412",
+  "backgroundColor": "#1a1412",
+  "startUrl": "/",
+  "iconUrl": "https://pos2026-mu.vercel.app/icon-512.png",
+  "maskableIconUrl": "https://pos2026-mu.vercel.app/icon-512.png",
+  "monochromeIconUrl": "https://pos2026-mu.vercel.app/icon-512.png",
+  "appVersion": "1.0.0",
+  "appVersionCode": 1,
+  "signingKey": {
+    "path": "./android-keystore.jks",
+    "alias": "ggpos"
+  },
+  "additionalTrustedOrigins": [],
+  "retainedBundles": [],
+  "generatorApp": "bubblewrap-cli",
+  "webManifestUrl": "https://pos2026-mu.vercel.app/manifest.json",
+  "fallbackType": "customtabs",
+  "features": {
+    "locationDelegation": { "enabled": false },
+    "playBilling": { "enabled": false }
+  },
+  "alphaDependencies": { "enabled": false },
+  "enableNotifications": false,
+  "isChromeOSOnly": false,
+  "isMetaQuest": false,
+  "fullScopeUrl": "https://pos2026-mu.vercel.app/",
+  "minSdkVersion": 21,
+  "targetSdkVersion": 34,
+  "shortcuts": [],
+  "generatedAppTitle": "GG Pasoryan Enterprise POS"
+}
